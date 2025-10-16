@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mika's Scheduler</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Atty. Mika's Daily to Weekly Schedule</h1>
+    <div class="date-controls">
+      <button id="prevDay" title="Previous Day">◀</button>
+      <input type="date" id="selectedDate" />
+      <button id="nextDay" title="Next Day">▶</button>
+      <span id="weekdayLabel"></span>
+    </div>
+  </header>
+
+  <main>
+    <section class="schedule-section">
+      <table id="scheduleTable">
+        <thead>
+          <tr>
+            <th class="time-col">Time</th>
+            <th>Matters to Discuss</th>
+            <th>Venue</th>
+            <th>Attendees</th>
+            <th>Status</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody id="scheduleBody">
+          <!-- Rows inserted by JS -->
+        </tbody>
+      </table>
+      <div class="export-import">
+        <button id="printPdf">Print / PDF</button>
+        <button id="saveScheduleBtn" title="Save schedule manually">Save Schedule</button>
+        <button id="clearScheduleBtn" title="Clear all entries for this day">Clear Schedule</button>
+      </div>
+      <div id="saveIndicator">All changes saved</div>
+    </section>
+
+    <aside class="todo-section">
+      <h2>To-Do List</h2>
+      <form id="todoForm">
+        <input type="text" id="todoInput" placeholder="New task description" required />
+        <select id="todoStatus" title="Status">
+          <option value="Pending">Pending</option>
+          <option value="Done">Done</option>
+          <option value="Cancelled">Cancelled</option>
+        </select>
+  <input id="todoTime" list="timeHints" placeholder="Time (e.g. 8:30 AM)" title="Time Slot" />
+  <datalist id="timeHints"></datalist>
+        <button type="submit" name="action" value="add">Add</button>
+        <button type="submit" name="action" value="addt" title="Add directly to schedule only">AddT</button>
+      </form>
+      <ul id="todoList"></ul>
+      <div class="todo-actions">
+        <button id="clearDone">Clear Done</button>
+        <button id="saveTodoListBtn" title="Force save list">Save List</button>
+        <button id="clearTodoListBtn" title="Remove ALL to-dos">Clear List</button>
+      </div>
+    </aside>
+  </main>
+
+  <footer>
+    <small>Data is stored locally in your browser (localStorage). Clearing browser storage will remove saved schedules.</small>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
