@@ -1,3 +1,20 @@
+/* Animations */
+@keyframes popIn {
+  0% { transform: scale(.95); opacity:0; }
+  50% { transform: scale(1.02); opacity:1; }
+  100% { transform: scale(1); }
+}
+@keyframes glowFade {
+  0% { box-shadow:0 0 0 0 rgba(255,105,180,.8); }
+  40% { box-shadow:0 0 0 6px rgba(255,105,180,.3); }
+  100% { box-shadow:0 0 0 0 rgba(255,105,180,0); }
+}
+@keyframes slideHighlight {
+  0% { background:#ffe0f7; }
+  100% { background:inherit; }
+}
+.added-row { animation: popIn .5s ease, glowFade 1.2s ease; }
+.added-todo { animation: popIn .5s ease, slideHighlight 1.4s ease; }
 .status-Pending, .todo-status-Pending { background:#fff59d !important; }
 .status-Done, .todo-status-Done { background:#c8e6c9 !important; }
 .status-Cancelled, .todo-status-Cancelled { background:#ffcdd2 !important; }
@@ -10,6 +27,40 @@ body {
   color: #4a154b;
   min-height:100vh;
 }
+/* Nezuko-inspired bamboo grid overlay */
+body::before {
+  content:'';
+  position:fixed; inset:0; pointer-events:none; z-index:-2;
+  background:
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.15) 0 8px, transparent 8px 64px),
+    repeating-linear-gradient(180deg, rgba(255,255,255,0.12) 0 8px, transparent 8px 64px);
+  mix-blend-mode:overlay;
+}
+/* Soft vignette */
+body::after {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:-1;
+  background:radial-gradient(circle at center, rgba(255,255,255,0.25) 0%, rgba(255,200,230,0.15) 40%, rgba(255,110,180,0.25) 75%, rgba(120,30,70,0.4) 100%);
+  opacity:.55; mix-blend-mode:soft-light;
+}
+
+/* Floating petal animation */
+@keyframes petalFloat {
+  0% { transform:translateY(0) rotate(0deg); opacity:0; }
+  10% { opacity:1; }
+  50% { transform:translateY(-50vh) rotate(180deg); }
+  90% { opacity:1; }
+  100% { transform:translateY(-100vh) rotate(360deg); opacity:0; }
+}
+.petal {
+  position:fixed; bottom:-40px; width:18px; height:14px; border-radius:60% 40% 60% 40%;
+  background:radial-gradient(circle at 30% 30%, #ffeaf5 0%, #ff9ccf 55%, #ff6fbf 100%);
+  box-shadow:0 2px 4px rgba(255,105,180,.4);
+  filter:blur(.3px);
+  animation:petalFloat var(--dur) linear var(--delay) infinite;
+  z-index:-3; opacity:0;
+}
+.petal.p2 { width:14px; height:11px; background:radial-gradient(circle at 30% 30%, #fff5fa 0%, #ffc0e5 60%, #ff8ad6 100%); }
+.petal.p3 { width:22px; height:16px; background:radial-gradient(circle at 30% 30%, #ffeef7 0%, #ffaad7 50%, #ff5fbf 100%); }
 header { background: linear-gradient(90deg,#ff5fbf,#ff4fb3,#ff67c7); color:#fff; padding:1.1rem 1.5rem; box-shadow:0 4px 10px rgba(255,105,180,.35); position:sticky; top:0; z-index:50; }
 header h1 { margin:0 0 .5rem; font-size:1.7rem; text-align:center; font-weight:700; letter-spacing:.5px; text-shadow:0 2px 4px rgba(0,0,0,.15); }
 .date-controls { display:flex; justify-content:center; align-items:center; gap:.6rem; flex-wrap:wrap; }
@@ -30,6 +81,9 @@ main { display:flex; gap:1.5rem; padding:1.25rem 1.7rem 2rem; flex-wrap:wrap; }
 #scheduleBody tr:nth-child(odd) { background:#fff6fb; }
 #scheduleBody tr:nth-child(even) { background:#fff; }
 #scheduleBody tr:hover { background:#ffeef9; }
+
+.row-delete-btn { background:#ff3fb5; border:none; color:#fff; font-weight:600; cursor:pointer; padding:.35rem .55rem; border-radius:8px; box-shadow:0 2px 5px rgba(255,105,180,.35); font-size:.7rem; }
+.row-delete-btn:hover { background:#ff1499; }
 
 .editable { min-height:38px; cursor:text; }
 .status-select { width:100%; font-size:.7rem; border:1px solid #ff8ad6; border-radius:6px; background:#fff5fb; }
@@ -71,7 +125,8 @@ footer { text-align:center; font-size:.65rem; padding:1.2rem 1rem 1.6rem; color:
 /* Print Styles */
 @media print {
   body { background:#fff; }
-  header, .export-import, .todo-actions, #saveIndicator, .date-controls button, #todoForm button, #todoForm select, #todoForm input[type=date], input[type=file] { display:none !important; }
+  body::before, body::after, .petal { display:none !important; }
+  header, .export-import, .todo-actions, #saveIndicator, .date-controls button, #todoForm button, #todoForm select, #todoForm input[type=date], input[type=file], .row-delete-btn { display:none !important; }
   main { display:block; }
   .todo-section { page-break-before:always; border:none; }
   #scheduleTable th, #scheduleTable td { font-size:10pt; }

@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <!-- Animated background petals container -->
+  <div id="petalLayer" aria-hidden="true"></div>
   <header>
     <h1>Atty. Mika's Daily to Weekly Schedule</h1>
     <div class="date-controls">
@@ -28,6 +30,7 @@
             <th>Attendees</th>
             <th>Status</th>
             <th>Notes</th>
+            <th>Delete</th>
           </tr>
         </thead>
         <tbody id="scheduleBody">
@@ -53,8 +56,8 @@
         </select>
   <input id="todoTime" list="timeHints" placeholder="Time (e.g. 8:30 AM)" title="Time Slot" />
   <datalist id="timeHints"></datalist>
-        <button type="submit" name="action" value="add">Add</button>
-        <button type="submit" name="action" value="addt" title="Add directly to schedule only">AddT</button>
+  <button type="submit" name="action" value="add">Add Task</button>
+  <button type="submit" name="action" value="addt" title="Add directly to schedule only">Add Schedule</button>
       </form>
       <ul id="todoList"></ul>
       <div class="todo-actions">

@@ -61,7 +61,7 @@ function saveSchedule(dateStr, data){
   localStorage.setItem(storageKeyForDate(dateStr), JSON.stringify(data));
 }
 
-function renderSchedule(dateStr){
+function renderSchedule(dateStr, highlightTime){
   scheduleBody.innerHTML='';
   let data = loadSchedule(dateStr);
   data = sortByTime(data);
@@ -129,7 +129,28 @@ function renderSchedule(dateStr){
     notesTd.innerHTML = sanitize(row.notes||'');
     tr.appendChild(notesTd);
 
+    // Delete column
+    const delTd = document.createElement('td');
+    const delBtn = document.createElement('button');
+    delBtn.type='button';
+    delBtn.className='row-delete-btn';
+    delBtn.textContent='✕';
+    delBtn.title='Delete this time slot';
+    delBtn.addEventListener('click', () => {
+      if(confirm(`Delete schedule at ${row.time}?`)){
+        const all = loadSchedule(dateStr).filter(r => r.time !== row.time);
+        saveSchedule(dateStr, all);
+        renderSchedule(dateStr);
+        markSaving();
+      }
+    });
+    delTd.appendChild(delBtn);
+    tr.appendChild(delTd);
+
     applyStatusClass(tr, row.status);
+    if(highlightTime && row.time === highlightTime){
+      tr.classList.add('added-row');
+    }
     scheduleBody.appendChild(tr);
   });
 }
@@ -229,7 +250,7 @@ function saveTodos(todos){
   localStorage.setItem(TODO_KEY, JSON.stringify(todos));
 }
 
-function renderTodos(){
+function renderTodos(highlightIndex){
   const todos = loadTodos();
   todoListEl.innerHTML='';
   todos.forEach((t, idx) => {
@@ -252,6 +273,9 @@ function renderTodos(){
     li.appendChild(textarea);
     li.appendChild(select);
     li.appendChild(delBtn);
+    if(highlightIndex === idx){
+      li.classList.add('added-todo');
+    }
     todoListEl.appendChild(li);
   });
 }
@@ -271,10 +295,11 @@ todoForm.addEventListener('submit', (e) => {
   if(submitter === 'add') {
     const todos = loadTodos();
     todos.push({ text, status });
-    saveTodosAndRefresh(todos);
+    saveTodos(todos);
+    renderTodos(todos.length - 1); // highlight new todo
   } else if(submitter === 'addt') {
     // Insert directly into schedule at chosen time
-    insertIntoScheduleAtTime(text, status, time);
+    insertIntoScheduleAtTime(text, status, time, true);
   }
   todoForm.reset();
   todoStatusSelect.value='Pending';
@@ -309,7 +334,7 @@ function insertTodoIntoSchedule(text, status){
 }
 
 // New: insert at specific time slot
-function insertIntoScheduleAtTime(text, status, time){
+function insertIntoScheduleAtTime(text, status, time, highlight){
   if(!time){ time = guessNextTime(); }
   const dateStr = selectedDateInput.value;
   const data = loadSchedule(dateStr);
@@ -325,7 +350,7 @@ function insertIntoScheduleAtTime(text, status, time){
   }
   if(status && status !== 'Pending') row.status = status;
   saveSchedule(dateStr, sortByTime(data));
-  renderSchedule(dateStr);
+  renderSchedule(dateStr, highlight ? time : undefined);
 }
 
 function guessNextTime(){
@@ -393,3 +418,30 @@ printPdfBtn.addEventListener('click', () => {
 initDate();
 renderTodos();
 populateTimeHints();
+
+// ===== Nezuko-inspired petal background initialization =====
+initPetals();
+
+function initPetals(){
+  const layer = document.getElementById('petalLayer');
+  if(!layer) return;
+  const PETAL_COUNT = 28; // performance balanced
+  const fragment = document.createDocumentFragment();
+  for(let i=0;i<PETAL_COUNT;i++){
+    const el = document.createElement('div');
+    el.className = 'petal' + (i%3 === 1 ? ' p2' : (i%3 === 2 ? ' p3' : ''));
+    const dur = (30 + Math.random()*30).toFixed(1) + 's';
+    const delay = (-Math.random()*30).toFixed(1) + 's'; // negative so flow already in progress
+    const left = (Math.random()*100).toFixed(2) + 'vw';
+    el.style.setProperty('--dur', dur);
+    el.style.setProperty('--delay', delay);
+    el.style.left = left;
+    fragment.appendChild(el);
+  }
+  layer.appendChild(fragment);
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    disablePetals();
+  }
+}
+function disablePetals(){ document.querySelectorAll('.petal').forEach(p=>p.style.display='none'); }
+function enablePetals(){ document.querySelectorAll('.petal').forEach(p=>p.style.display='block'); }
